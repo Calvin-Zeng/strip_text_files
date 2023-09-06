@@ -1,0 +1,5 @@
+# The regex pattern will ignore the # at the beginning of the line.
+.+ (WM)
+.+ (WM).+topology change: channel
+.+ (SM)
+.+

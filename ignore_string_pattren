@@ -1,0 +1,17 @@
+# The regex pattern will ignore the # at the beginning of the line.
+# OVSDB operation.
+.+ OVSDB: (SYNC|query result|.+):
+
+# OpenSync managers.
+.+ (healthcheck)
+.+ (FM)
+
+# OpenSync-SM Sending survey report
+.+ (SM).+ Sending .+ (on|off)\-chan (survey|neighbor|client) report
+.+ (SM).+ Sending .+ client report
+
+# kernel warning.
+.+ kern.warn kernel
+
+# Driver console messages.
+.+ CONSOLE\[wl(0|1|2)\]
