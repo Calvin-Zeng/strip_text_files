@@ -75,6 +75,11 @@ def delete_file(file):
     except OSError as e:
         print("Error: %s - %s." % (e.filename, e.strerror))
 
+def create_folder(folder):
+    # Create the folder if isn't exist.
+    if not os.path.isdir(folder):
+        os.mkdir(folder);
+
 def delete_folder(folder):
     try:
         shutil.rmtree(folder)
@@ -100,10 +105,8 @@ def strip_log(files):
     for droppedFile in files:
         print("Handle the file:" + droppedFile)
         topath = process_path(droppedFile)
-        
-        # Create the folder if isn't exist.
-        if not os.path.isdir(topath + dir_name):
-            os.mkdir(topath + dir_name);
+
+        create_folder(topath + dir_name)
         
         writeFile = topath + dir_name + os.path.basename(droppedFile) + t_string + ".log"
         # with open(droppedFile, errors='ignore') as f_read:
@@ -123,25 +126,23 @@ def strip_log_by_mac(files):
     for mac in mac_list:
         ignore_pattren = []
         pass_pattren   = []
-        mac_is_in_log  = False
-        dir_name       = "strip_log_by_mac" + t_string + "/"
         pass_pattren.append(".+ (WM|SM|BM).+(" + mac + ").+connected.")
         pass_pattren.append(".+ (WM|SM|BM).+(" + mac + ").+disconnected")
         pass_pattren.append(".+ (WM).+(" + mac + ").+disassoc indication")
         pass_pattren.append(".+ (BM).+(" + mac + ").+type=Disassoc, reason=")
         pass_pattren.append(".+ (WM).+topology change: channel")
+        mac_is_in_log  = False
+        dir_name       = "strip_log_by_mac" + t_string + "/"
+        mac_re_string  = mac.replace(":", "_")
 
         for droppedFile in files:
             print("Handle the file:" + droppedFile + ", and filter by MAC:" + mac)
             topath = process_path(droppedFile)
 
-            # Create the folder if isn't exist.
-            if not os.path.isdir(topath + dir_name):
-                os.mkdir(topath + dir_name);
-            if not os.path.isdir(topath + dir_name + mac.replace(":", "_") + "/"):
-                os.mkdir(topath + dir_name + mac.replace(":", "_") + "/");
+            create_folder(topath + dir_name)
+            create_folder(topath + dir_name + mac_re_string + "/")
 
-            writeFile = topath + dir_name + mac.replace(":", "_") + "/" + os.path.basename(droppedFile) + t_string + ".log"
+            writeFile = topath + dir_name + mac_re_string + "/" + os.path.basename(droppedFile) + t_string + ".log"
             # with open(droppedFile, errors='ignore') as f_read:
             with codecs.open(droppedFile, 'r', encoding='utf-8', errors='ignore') as f_read:
                 with codecs.open(writeFile, 'w', encoding='utf-8', errors='ignore') as f_write:
@@ -154,8 +155,8 @@ def strip_log_by_mac(files):
             f_write.close()
             if file_size(writeFile) == 0 or mac_is_in_log == False:
                 delete_file(writeFile)
-            if counts_files_in_folder(topath + dir_name + mac.replace(":", "_")) == 0:
-                delete_folder(topath + dir_name + mac.replace(":", "_"))
+            if counts_files_in_folder(topath + dir_name + mac_re_string) == 0:
+                delete_folder(topath + dir_name + mac_re_string)
 
 def main():
     if len(sys.argv) < 2:
